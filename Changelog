@@ -1,0 +1,8 @@
+--[[
+Changelog:
+- Added color options: Blue, Red, Green, Yellow, Purple, Rainbow
+- Draggable UI
+- Rainbow stroke animation
+- Toggle UI visibility with custom keybind
+- Main frame fades in smoothly on creation
+]]
