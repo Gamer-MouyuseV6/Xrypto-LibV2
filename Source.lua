@@ -9,13 +9,24 @@ function Library.CreateLoader(options)
     local toggleKey = options.ToggleKeybind or "RightControl"
     local uiColor = (options.UIColor or "Blue"):lower()
 
+    -- Check if UI already exists
+    local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    local existingUI = playerGui:FindFirstChild("UI")
+    if existingUI then
+        local mainFrame = existingUI:FindFirstChild("Main")
+        return {
+            UI = existingUI,
+            Main = mainFrame
+        }
+    end
+
     local UI = Instance.new("ScreenGui")
     local Main = Instance.new("Frame")
     local AspectRatio = Instance.new("UIAspectRatioConstraint")
     local UIStroke = Instance.new("UIStroke")
 
     UI.Name = "UI"
-    UI.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    UI.Parent = playerGui
     UI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
     UI.ResetOnSpawn = false
 
