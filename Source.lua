@@ -1,27 +1,20 @@
 local Library = {}
 
-local TweenService = game:GetService("TweenService")
-local UserInputService = game:GetService("UserInputService")
-
 function Library.CreateLoader(options)
     options = options or {}
     local toggleKey = options.ToggleKeybind or "RightControl"
-    local uiColor = (options.UIColor or "Blue"):lower()
-    local titleText = options.Tittle or "UI"
+    local uiColor = options.UIColor or Color3.fromRGB(39, 86, 255)
+    local titleText = options.Tittle or "My UI"
 
-    -- Check for existing UI to allow only one
     local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+    -- Remove existing UI if already there
     local existingUI = playerGui:FindFirstChild("UI")
     if existingUI then
-        local mainFrame = existingUI:FindFirstChild("Main")
-        return {
-            UI = existingUI,
-            Main = mainFrame,
-            Visible = function(self, bool) existingUI.Enabled = bool end,
-            Destroy = function(self) existingUI:Destroy() end
-        }
+        existingUI:Destroy()
     end
 
+    -- UI Setup
     local UI = Instance.new("ScreenGui")
     UI.Name = "UI"
     UI.Parent = playerGui
@@ -35,77 +28,100 @@ function Library.CreateLoader(options)
     Main.BackgroundColor3 = Color3.fromRGB(13, 13, 13)
     Main.BorderSizePixel = 0
     Main.Position = UDim2.new(0.5, 0, 0.5, 0)
-    Main.Size = UDim2.new(0, 232, 0, 197)
-    Main.BackgroundTransparency = 1
+    Main.Size = UDim2.new(0, 409, 0, 347)
+    Main.BackgroundTransparency = 1 -- Start invisible for fade-in
 
-    TweenService:Create(Main, TweenInfo.new(0.5), {BackgroundTransparency = 0}):Play()
+    local UISTROKE = Instance.new("UIStroke")
+    UISTROKE.Color = uiColor
+    UISTROKE.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    UISTROKE.Thickness = 1
+    UISTROKE.Transparency = 0.4
+    UISTROKE.Parent = Main
 
-    local UIStroke = Instance.new("UIStroke")
-    UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    UIStroke.Thickness = 1
-    UIStroke.Transparency = 0.4
-    UIStroke.Parent = Main
+    local Frame = Instance.new("Frame")
+    Frame.Parent = Main
+    Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Frame.BorderSizePixel = 0
+    Frame.Position = UDim2.new(0, 0, 0.072, 0)
+    Frame.Size = UDim2.new(0, 408, 0, 1)
 
-    local AspectRatio = Instance.new("UIAspectRatioConstraint")
-    AspectRatio.Name = "AspectRatio"
-    AspectRatio.Parent = Main
-    AspectRatio.AspectRatio = 1.177
-
-    local ColorLine = Instance.new("Frame")
-    ColorLine.Name = "ColorLine"
-    ColorLine.Parent = Main
-    ColorLine.BackgroundColor3 = Color3.new(1,1,1)
-    ColorLine.BorderSizePixel = 0
-    ColorLine.Position = UDim2.new(0, 0, 0.142, 0)
-    ColorLine.Size = UDim2.new(0, 231, 0, 1)
-
-    local ColorLine2 = Instance.new("Frame")
-    ColorLine2.Name = "ColorLine2"
-    ColorLine2.Parent = Main
-    ColorLine2.BackgroundColor3 = Color3.new(1,1,1)
-    ColorLine2.BorderSizePixel = 0
-    ColorLine2.Position = UDim2.new(0.185, 0, 0.147, 0)
-    ColorLine2.Size = UDim2.new(0, 1, 0, 168)
+    local UIGradient = Instance.new("UIGradient")
+    UIGradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0.00, Color3.fromRGB(44, 44, 44)),
+        ColorSequenceKeypoint.new(0.50, uiColor),
+        ColorSequenceKeypoint.new(1.00, Color3.fromRGB(44, 44, 44))
+    }
+    UIGradient.Parent = Frame
 
     local Tittle = Instance.new("TextLabel")
     Tittle.Name = "Tittle"
     Tittle.Parent = Main
     Tittle.BackgroundTransparency = 1
-    Tittle.Position = UDim2.new(0.03, 0, 0, 0)
-    Tittle.Size = UDim2.new(0, 162, 0, 29)
+    Tittle.Position = UDim2.new(0.02, 0, 0, 0)
+    Tittle.Size = UDim2.new(0, 197, 0, 25)
     Tittle.Font = Enum.Font.Code
-    Tittle.TextColor3 = Color3.new(1,1,1)
-    Tittle.TextSize = 13
-    Tittle.TextXAlignment = Enum.TextXAlignment.Left
     Tittle.Text = titleText
+    Tittle.TextColor3 = uiColor
+    Tittle.TextSize = 15
+    Tittle.TextXAlignment = Enum.TextXAlignment.Left
 
-    -- Color map for UI colors
-    local colorMap = {
-        blue = Color3.fromRGB(76, 79, 255),
-        red = Color3.fromRGB(255, 0, 0),
-        green = Color3.fromRGB(0, 255, 0),
-        yellow = Color3.fromRGB(255, 255, 0),
-        purple = Color3.fromRGB(128, 0, 128)
-    }
+    local Close = Instance.new("ImageButton")
+    Close.Name = "Close"
+    Close.Parent = Main
+    Close.BackgroundTransparency = 1
+    Close.Position = UDim2.new(0.93, 0, 0.01, 0)
+    Close.Size = UDim2.new(0, 18, 0, 18)
+    Close.Image = "rbxassetid://10747384394"
 
-    -- Apply color to stroke, lines, and title text
-    local chosenColor = colorMap[uiColor] or colorMap.blue
-    UIStroke.Color = chosenColor
-    ColorLine.BackgroundColor3 = chosenColor
-    ColorLine2.BackgroundColor3 = chosenColor
-    Tittle.TextColor3 = chosenColor
+    local Minus = Instance.new("ImageButton")
+    Minus.Name = "Minus"
+    Minus.Parent = Main
+    Minus.BackgroundTransparency = 1
+    Minus.Position = UDim2.new(0.87, 0, 0.01, 0)
+    Minus.Size = UDim2.new(0, 18, 0, 18)
+    Minus.Image = "rbxassetid://10734896206"
 
-    -- Drag logic (same as before)
+    local Tab = Instance.new("Frame")
+    Tab.Name = "Tab"
+    Tab.Parent = Main
+    Tab.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
+    Tab.Position = UDim2.new(0.02, 0, 0.103, 0)
+    Tab.Size = UDim2.new(0, 73, 0, 302)
+
+    local UISTROKE2 = Instance.new("UIStroke")
+    UISTROKE2.Color = Color3.fromRGB(44, 44, 44)
+    UISTROKE2.Thickness = 1
+    UISTROKE2.Parent = Tab
+
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 2)
+    UICorner.Parent = Tab
+
+    local UICorner2 = Instance.new("UICorner")
+    UICorner2.CornerRadius = UDim.new(0, 3)
+    UICorner2.Parent = Main
+
+    -- Button logic
+    Minus.MouseButton1Click:Connect(function()
+        Main.Visible = not Main.Visible
+    end)
+    Close.MouseButton1Click:Connect(function()
+        UI:Destroy()
+    end)
+
+    -- Draggable
     local dragging, dragInput, dragStart, startPos
+    local UserInputService = game:GetService("UserInputService")
+    local TweenService = game:GetService("TweenService")
     local function update(input)
         local delta = input.Position - dragStart
         local goal = {}
         goal.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
                                   startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-        TweenService:Create(Main, TweenInfo.new(0.04, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), goal):Play()
+        TweenService:Create(Main, TweenInfo.new(0.04, Enum.EasingStyle.Sine), goal):Play()
     end
     Main.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
             dragStart = input.Position
             startPos = Main.Position
@@ -117,7 +133,7 @@ function Library.CreateLoader(options)
         end
     end)
     Main.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        if input.UserInputType == Enum.UserInputType.MouseMovement then
             dragInput = input
         end
     end)
@@ -127,24 +143,21 @@ function Library.CreateLoader(options)
         end
     end)
 
-    -- Toggle UI visibility on keybind
-    local toggleKeyCode = Enum.KeyCode[toggleKey] or Enum.KeyCode.RightControl
+    -- Fade in Main
+    TweenService:Create(Main, TweenInfo.new(0.4), {BackgroundTransparency = 0}):Play()
+
+    -- Toggle with keybind
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if not gameProcessed and input.KeyCode == toggleKeyCode then
+        if not gameProcessed and input.KeyCode == Enum.KeyCode[toggleKey] then
             UI.Enabled = not UI.Enabled
         end
     end)
 
-    -- Return the UI with custom methods
     return {
         UI = UI,
         Main = Main,
-        Visible = function(self, bool)
-            UI.Enabled = bool and true or false
-        end,
-        Destroy = function(self)
-            UI:Destroy()
-        end
+        Visible = function(self, bool) UI.Enabled = bool end,
+        Destroy = function(self) UI:Destroy() end
     }
 end
 
