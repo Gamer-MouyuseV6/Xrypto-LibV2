@@ -38,12 +38,12 @@ function Library.CreateLoader(options)
     UISTROKE.Transparency = 0.4
     UISTROKE.Parent = Main
 
-    local Frame = Instance.new("Frame")
-    Frame.Parent = Main
-    Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-    Frame.BorderSizePixel = 0
-    Frame.Position = UDim2.new(0, 0, 0.072, 0)
-    Frame.Size = UDim2.new(0, 408, 0, 1)
+    local HeaderLine = Instance.new("Frame")
+    HeaderLine.Parent = Main
+    HeaderLine.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    HeaderLine.BorderSizePixel = 0
+    HeaderLine.Position = UDim2.new(0, 0, 0.072, 0)
+    HeaderLine.Size = UDim2.new(0, 408, 0, 1)
 
     local UIGradient = Instance.new("UIGradient")
     UIGradient.Color = ColorSequence.new{
@@ -51,19 +51,19 @@ function Library.CreateLoader(options)
         ColorSequenceKeypoint.new(0.50, uiColor),
         ColorSequenceKeypoint.new(1.00, Color3.fromRGB(44, 44, 44))
     }
-    UIGradient.Parent = Frame
+    UIGradient.Parent = HeaderLine
 
-    local Tittle = Instance.new("TextLabel")
-    Tittle.Name = "Tittle"
-    Tittle.Parent = Main
-    Tittle.BackgroundTransparency = 1
-    Tittle.Position = UDim2.new(0.02, 0, 0, 0)
-    Tittle.Size = UDim2.new(0, 197, 0, 25)
-    Tittle.Font = Enum.Font.Code
-    Tittle.Text = titleText
-    Tittle.TextColor3 = uiColor
-    Tittle.TextSize = 15
-    Tittle.TextXAlignment = Enum.TextXAlignment.Left
+    local Title = Instance.new("TextLabel")
+    Title.Name = "Title"
+    Title.Parent = Main
+    Title.BackgroundTransparency = 1
+    Title.Position = UDim2.new(0.02, 0, 0, 0)
+    Title.Size = UDim2.new(0, 197, 0, 25)
+    Title.Font = Enum.Font.Code
+    Title.Text = titleText
+    Title.TextColor3 = uiColor
+    Title.TextSize = 15
+    Title.TextXAlignment = Enum.TextXAlignment.Left
 
     local Close = Instance.new("ImageButton")
     Close.Name = "Close"
@@ -73,43 +73,55 @@ function Library.CreateLoader(options)
     Close.Size = UDim2.new(0, 18, 0, 18)
     Close.Image = "rbxassetid://10747384394"
 
-    local Minus = Instance.new("ImageButton")
-    Minus.Name = "Minus"
-    Minus.Parent = Main
-    Minus.BackgroundTransparency = 1
-    Minus.Position = UDim2.new(0.87, 0, 0.01, 0)
-    Minus.Size = UDim2.new(0, 18, 0, 18)
-    Minus.Image = "rbxassetid://10734896206"
+    local Minimize = Instance.new("ImageButton")
+    Minimize.Name = "Minimize"
+    Minimize.Parent = Main
+    Minimize.BackgroundTransparency = 1
+    Minimize.Position = UDim2.new(0.87, 0, 0.01, 0)
+    Minimize.Size = UDim2.new(0, 18, 0, 18)
+    Minimize.Image = "rbxassetid://10734896206"
 
-    local Tab = Instance.new("Frame")
-    Tab.Name = "Tab"
-    Tab.Parent = Main
-    Tab.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
-    Tab.Position = UDim2.new(0.02, 0, 0.103, 0)
-    Tab.Size = UDim2.new(0, 73, 0, 302)
+    local Sidebar = Instance.new("Frame")
+    Sidebar.Name = "Sidebar"
+    Sidebar.Parent = Main
+    Sidebar.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
+    Sidebar.Position = UDim2.new(0.02, 0, 0.103, 0)
+    Sidebar.Size = UDim2.new(0, 73, 0, 302)
 
     local UISTROKE2 = Instance.new("UIStroke")
     UISTROKE2.Color = Color3.fromRGB(44, 44, 44)
     UISTROKE2.Thickness = 1
-    UISTROKE2.Parent = Tab
+    UISTROKE2.Parent = Sidebar
 
-    local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 2)
-    UICorner.Parent = Tab
+    local UICorner1 = Instance.new("UICorner")
+    UICorner1.CornerRadius = UDim.new(0, 2)
+    UICorner1.Parent = Sidebar
 
     local UICorner2 = Instance.new("UICorner")
     UICorner2.CornerRadius = UDim.new(0, 3)
     UICorner2.Parent = Main
 
+    -- Templates for buttons and tabs
+    local ButtonTemplate = Instance.new("TextButton")
+    ButtonTemplate.Size = UDim2.new(1, -10, 0, 30)
+    ButtonTemplate.Position = UDim2.new(0, 5, 0, 5)
+    ButtonTemplate.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    ButtonTemplate.TextColor3 = Color3.fromRGB(255, 255, 255)
+    ButtonTemplate.Font = Enum.Font.Code
+    ButtonTemplate.TextSize = 14
+    ButtonTemplate.Text = "Tab"
+    ButtonTemplate.Visible = false
+    ButtonTemplate.Parent = Sidebar
+
     -- Button logic
-    Minus.MouseButton1Click:Connect(function()
+    Minimize.MouseButton1Click:Connect(function()
         Main.Visible = not Main.Visible
     end)
     Close.MouseButton1Click:Connect(function()
         UI:Destroy()
     end)
 
-    -- Draggable
+    -- Draggable logic
     local dragging, dragInput, dragStart, startPos
     local UserInputService = game:GetService("UserInputService")
     local TweenService = game:GetService("TweenService")
@@ -153,12 +165,48 @@ function Library.CreateLoader(options)
         end
     end)
 
-    return {
-        UI = UI,
-        Main = Main,
-        Visible = function(self, bool) UI.Enabled = bool end,
-        Destroy = function(self) UI:Destroy() end
-    }
+    -- Tabs logic
+    local Window = {}
+    Window.Tabs = {}
+
+    function Window.CreateTab(tabName)
+        -- Create button
+        local newButton = ButtonTemplate:Clone()
+        newButton.Text = tabName
+        newButton.Visible = true
+        newButton.Position = UDim2.new(0, 5, 0, (#Sidebar:GetChildren() - 2) * 35)
+        newButton.Parent = Sidebar
+
+        -- Create tab frame
+        local newTab = Instance.new("Frame")
+        newTab.Name = tabName
+        newTab.Parent = Main
+        newTab.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+        newTab.Position = UDim2.new(0.21, 0, 0.103, 0)
+        newTab.Size = UDim2.new(0.77, 0, 0.88, 0)
+        newTab.Visible = false
+
+        local UICornerTab = Instance.new("UICorner")
+        UICornerTab.CornerRadius = UDim.new(0, 4)
+        UICornerTab.Parent = newTab
+
+        -- Button click shows tab
+        newButton.MouseButton1Click:Connect(function()
+            for _, tab in pairs(Window.Tabs) do
+                tab.Visible = false
+            end
+            newTab.Visible = true
+        end)
+
+        Window.Tabs[tabName] = newTab
+        return newTab
+    end
+
+    Window.UI = UI
+    Window.Visible = function(self, bool) UI.Enabled = bool end
+    Window.Destroy = function(self) UI:Destroy() end
+
+    return Window
 end
 
 return Library
