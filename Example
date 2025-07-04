@@ -1,10 +1,9 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gamer-MouyuseV6/Xrypto-Lib/refs/heads/main/Source.lua"))()
 
 local Window = Library.CreateLoader({
-    Tittle = "My script",
+    Tittle = "My Script",
     ToggleKeybind = "RightControl",
-    UIColor = "Blue"
+    UIColor = Color3.fromRGB(255, 100, 100) -- Custom color
 })
 
-Window:Visible(true)
-Window:Destroy()
+Window:Visible(true) -- Show UI
