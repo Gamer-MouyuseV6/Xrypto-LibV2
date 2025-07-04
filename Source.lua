@@ -14,6 +14,7 @@ function Library.CreateLoader(options)
     UI.Name = "UI"
     UI.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
     UI.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    UI.ResetOnSpawn = false
 
     local Main = Instance.new("Frame")
     Main.Name = "Main"
@@ -23,6 +24,7 @@ function Library.CreateLoader(options)
     Main.BorderSizePixel = 0
     Main.Position = UDim2.new(0.5, 0, 0.5, 0)
     Main.Size = UDim2.new(0, 409, 0, 347)
+    Main.ClipsDescendants = true
 
     local UICorner = Instance.new("UICorner")
     UICorner.CornerRadius = UDim.new(0, 3)
@@ -36,7 +38,7 @@ function Library.CreateLoader(options)
     UISTROKE.Parent = Main
 
     local Frame = Instance.new("Frame")
-    Frame.Name = ""
+    Frame.Name = "GradientFrame"
     Frame.Parent = Main
     Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
     Frame.BorderSizePixel = 0
@@ -131,7 +133,7 @@ function Library.CreateLoader(options)
     TESTTAB.Parent = Main
     TESTTAB.BackgroundColor3 = Color3.fromRGB(17, 17, 17)
     TESTTAB.BorderSizePixel = 0
-    TESTTAB.Position = UDim2.new(0.229829073, 0, 0. three, 0)
+    TESTTAB.Position = UDim2.new(0.229829073, 0, 0.103746399, 0)
     TESTTAB.Size = UDim2.new(0, 305, 0, 302)
 
     local UICorner_3 = Instance.new("UICorner")
