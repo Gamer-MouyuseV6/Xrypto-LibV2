@@ -11,14 +11,7 @@ function Library.CreateLoader(options)
     local existingUI = playerGui:FindFirstChild("Key")
 
     if existingUI then
-        local API = {}
-        function API:Visible(bool)
-            local frame = existingUI:FindFirstChild("Main")
-            if frame then
-                frame.Visible = bool
-            end
-        end
-        return API
+        existingUI:Destroy()
     end
 
     local Key = Instance.new("ScreenGui")
