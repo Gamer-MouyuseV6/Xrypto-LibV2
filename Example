@@ -1,4 +1,5 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gamer-MouyuseV6/Xrypto-Lib/refs/heads/main/Source.lua"))()
+
 local Config = Library:CreateConfig({
     Enable = true,
     Folder = "Hub",
@@ -6,15 +7,10 @@ local Config = Library:CreateConfig({
 })
 
 local Window = Library:CreateLoader({
-    Tittle = "My script",
     ToggleKeybind = "RightControl",
-    MobileSupported = false,
-    Key = {
-        Enable = true,
-        Key = "12345",
-        SaveKey = true,
-        AutoLoadkey = true
-    }
 })
 
-Window:Visible(true)
+Window.Scheme = {
+    Backgroundcolor = "Black",
+    OutlineColor = "Green"
+}
