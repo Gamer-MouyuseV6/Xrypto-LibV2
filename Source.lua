@@ -1,96 +1,109 @@
 local Library = {}
 
-function Library.CreateLoader(options)
+-- Default settings
+local DefaultScheme = {
+    BackgroundColor = Color3.fromRGB(0, 0, 0),
+    OutlineColor = Color3.fromRGB(0, 255, 0)
+}
+
+function Library:CreateConfig(config)
+    -- Placeholder config system
+    local cfg = {}
+    cfg.Enabled = config.Enable or true
+    cfg.Folder = config.Folder or "XryptoHub"
+    cfg.FileName = config.fileName or "Config"
+    -- You can expand here to save/load files
+    return cfg
+end
+
+function Library:CreateLoader(options)
     options = options or {}
-    local toggleKey = Enum.KeyCode[options.ToggleKeybind] or Enum.KeyCode.LeftControl
-    local uiColors = options.UIColor or {}
-    local mainColor = uiColors.MainUI or Color3.fromRGB(6, 6, 6)
-    local outlineColor = uiColors.OutLineUI or Color3.fromRGB(0, 47, 255)
+    local toggleKey = options.ToggleKeybind or "RightControl"
 
-    local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    local existingUI = playerGui:FindFirstChild("Key")
+    -- Destroy old UI
+    local oldUI = game:GetService("CoreGui"):FindFirstChild("UI")
+    if oldUI then oldUI:Destroy() end
 
-    if existingUI then
-        existingUI:Destroy()
-    end
+    -- Create UI
+    local UI = Instance.new("ScreenGui")
+    UI.Name = "UI"
+    UI.ResetOnSpawn = false
+    UI.Parent = game:GetService("CoreGui")
 
-    local Key = Instance.new("ScreenGui")
     local Main = Instance.new("Frame")
-    local UICorner = Instance.new("UICorner")
-    local UISTROKE = Instance.new("UIStroke")
-    local UserInputService = game:GetService("UserInputService")
-    local TweenService = game:GetService("TweenService")
-
-    Key.Name = "Key"
-    Key.Parent = playerGui
-    Key.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    Key.ResetOnSpawn = false
-
     Main.Name = "Main"
-    Main.Parent = Key
-    Main.BackgroundColor3 = mainColor
-    Main.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Main.Size = UDim2.new(0, 282, 0, 239)
+    Main.Position = UDim2.new(0.318356872, 0, 0.297800332, 0)
     Main.BorderSizePixel = 0
-    Main.Position = UDim2.new(0.35, 0, 0.35, 0)
-    Main.Size = UDim2.new(0, 247, 0, 207)
+    Main.BackgroundColor3 = DefaultScheme.BackgroundColor
+    Main.Parent = UI
 
+    local UICorner = Instance.new("UICorner")
     UICorner.CornerRadius = UDim.new(0, 2)
     UICorner.Parent = Main
 
-    UISTROKE.Color = outlineColor
-    UISTROKE.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    UISTROKE.Thickness = 1
-    UISTROKE.Transparency = 0
-    UISTROKE.Parent = Main
+    local UIStroke = Instance.new("UIStroke")
+    UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    UIStroke.Color = DefaultScheme.OutlineColor
+    UIStroke.Parent = Main
 
-    local dragging, dragInput, dragStart, startPos
-    local function update(input)
-        local delta = input.Position - dragStart
-        local goal = { Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y) }
-        TweenService:Create(Main, TweenInfo.new(0.04, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), goal):Play()
-    end
+    -- Dragging logic
+    coroutine.wrap(function()
+        local UIS = game:GetService('UserInputService')
+        local frame = Main
+        local dragging, dragStart, startPos
+        local dragSpeed = 0.25
 
-    Main.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = true
-            dragStart = input.Position
-            startPos = Main.Position
-            input.Changed:Connect(function()
-                if input.UserInputState == Enum.UserInputState.End then
-                    dragging = false
-                end
-            end)
+        local function updateInput(input)
+            local delta = input.Position - dragStart
+            local pos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
+                                  startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+            game:GetService('TweenService'):Create(frame, TweenInfo.new(dragSpeed), {Position = pos}):Play()
+        end
+
+        frame.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+                dragging = true
+                dragStart = input.Position
+                startPos = frame.Position
+                input.Changed:Connect(function()
+                    if input.UserInputState == Enum.UserInputState.End then
+                        dragging = false
+                    end
+                end)
+            end
+        end)
+
+        UIS.InputChanged:Connect(function(input)
+            if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+                updateInput(input)
+            end
+        end)
+    end)()
+
+    -- Toggle visibility with keybind
+    local UIS = game:GetService("UserInputService")
+    UIS.InputBegan:Connect(function(input, processed)
+        if not processed and input.KeyCode == Enum.KeyCode[toggleKey] then
+            UI.Enabled = not UI.Enabled
         end
     end)
 
-    Main.InputChanged:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-            dragInput = input
+    -- Return loader object
+    local Loader = {}
+
+    -- Scheme setter
+    Loader.Scheme = setmetatable({}, {
+        __newindex = function(_, k, v)
+            if k == "Backgroundcolor" then
+                Main.BackgroundColor3 = BrickColor.new(v).Color
+            elseif k == "OutlineColor" then
+                UIStroke.Color = BrickColor.new(v).Color
+            end
         end
-    end)
+    })
 
-    UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
-            update(input)
-        end
-    end)
-
-    local function toggleFrame()
-        Main.Visible = not Main.Visible
-    end
-
-    UserInputService.InputBegan:Connect(function(input, gameProcessed)
-        if not gameProcessed and input.UserInputType == Enum.UserInputType.Keyboard and input.KeyCode == toggleKey then
-            toggleFrame()
-        end
-    end)
-
-    local API = {}
-    function API:Visible(bool)
-        Main.Visible = bool
-    end
-
-    return API
+    return Loader
 end
 
 return Library
