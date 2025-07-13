@@ -1,26 +1,11 @@
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/Gamer-MouyuseV6/Xrypto-Lib/main/Source.lua"))()
 
-local Config = Library:CreateConfig({
-    Enable = true,
-    Folder = "Hub",
-    fileName = "Config"
+local Window = Library:CreateWindow({
+    Tittle = "Hi",
+    ToggleKey = "LeftControl"
 })
 
-local Key = Library:CreateLoader({
-    Enable = true,
-    Tittle = "Frog Hub",
-    Tittle2 = "Key system",
-    Key = {"Key"},
-    SaveKey = true,
-    AutoCheckIfKeyiscorrect = true,
-    ToggleKeybind = "RightControl",
-    SecondAction = {
-        GetLinkType = "Link",
-        Link = "https://discord.com/invite/abc123", -- Discord link (button will be blue)
-        Button = GetLinkFrame,
-        KeyBox = KeyBox,
-        Callback = function()
-            print("Key is correct!")
-        end
-    }
-})
+Window.Theme = {
+    BackGroundColor = Color3.fromRGB(20, 20, 20)
+    OutlineColor = Color3.fromRGB(81, 0, 255)
+}
