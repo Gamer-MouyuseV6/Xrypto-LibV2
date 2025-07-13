@@ -1,178 +1,179 @@
 local Library = {}
 
--- Color mapping
-local ColorMap = {
-    White = Color3.fromRGB(255, 255, 255),
-    Red = Color3.fromRGB(255, 0, 0),
-    Gray = Color3.fromRGB(128, 128, 128),
-    Blue = Color3.fromRGB(0, 0, 255),
-    Green = Color3.fromRGB(0, 255, 0),
-    Purple = Color3.fromRGB(128, 0, 128),
-    Pink = Color3.fromRGB(255, 105, 180),
-    Blown = Color3.fromRGB(139, 69, 19), -- "Blown" assumed to mean "Brown"
-    Orange = Color3.fromRGB(255, 165, 0),
-    Black = Color3.fromRGB(0, 0, 0),
-}
-
-local HttpService = game:GetService("HttpService")
-
--- Config system
-function Library:CreateConfig(config)
-    local folder = config.Folder or "XryptoHub"
-    local fileName = config.fileName or "Config"
-    local path = folder.."/"..fileName..".json"
-
-    -- Create folder if it doesn't exist
-    if not isfolder(folder) then
-        makefolder(folder)
-    end
-
-    local cfg = {}
-    cfg.FilePath = path
-    cfg.Data = {}
-
-    -- Load existing config
-    if isfile(path) then
-        local success, decoded = pcall(function()
-            return HttpService:JSONDecode(readfile(path))
-        end)
-        if success and typeof(decoded) == "table" then
-            cfg.Data = decoded
-        end
-    else
-        -- Write empty config if file doesn't exist
-        writefile(path, HttpService:JSONEncode(cfg.Data))
-    end
-
-    -- Save function
-    function cfg:Save(data)
-        self.Data = data or self.Data
-        writefile(self.FilePath, HttpService:JSONEncode(self.Data))
-    end
-
-    return cfg
-end
-
 function Library:CreateLoader(options)
-    options = options or {}
-    local toggleKey = options.ToggleKeybind or "RightControl"
+    -- Ensure options and SecondAction are provided
+    if not options or not options.SecondAction then
+        return {}
+    end
 
-    -- Destroy old UI
-    local oldUI = game:GetService("CoreGui"):FindFirstChild("UI")
-    if oldUI then oldUI:Destroy() end
-
-    -- Create UI
-    local UI = Instance.new("ScreenGui")
-    UI.Name = "UI"
-    UI.ResetOnSpawn = false
-    UI.Parent = game:GetService("CoreGui")
-
-    local Main = Instance.new("Frame")
-    Main.Name = "Main"
-    Main.Size = UDim2.new(0, 282, 0, 239)
-    Main.Position = UDim2.new(0.318356872, 0, 0.297800332, 0)
-    Main.BorderSizePixel = 0
-    Main.BackgroundColor3 = ColorMap.Black
-    Main.Parent = UI
-
+    -- UI setup (as provided)
+    local M4xKr9PvZsT2LwQ8 = Instance.new("ScreenGui")
+    local Screen = Instance.new("Frame")
+    local Key = Instance.new("Frame")
     local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(0, 2)
-    UICorner.Parent = Main
+    local Tittle1 = Instance.new("TextLabel")
+    local Tittle2 = Instance.new("TextLabel")
+    local KeyBoxFrame = Instance.new("Frame")
+    local UICorner_2 = Instance.new("UICorner")
+    local KeyBox = Instance.new("TextBox")
+    local GetLinkFrame = Instance.new("Frame")
+    local UICorner_3 = Instance.new("UICorner")
 
-    local UIStroke = Instance.new("UIStroke")
-    UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    UIStroke.Color = ColorMap.Green
-    UIStroke.Parent = Main
+    -- Set up ScreenGui
+    M4xKr9PvZsT2LwQ8.Name = "M4x-Kr9Pv-ZsT2-LwQ8"
+    M4xKr9PvZsT2LwQ8.Parent = game:GetService("CoreGui")
+    M4xKr9PvZsT2LwQ8.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    M4xKr9PvZsT2LwQ8.ResetOnSpawn = false
 
-    -- Dragging logic
-    coroutine.wrap(function()
-        local UIS = game:GetService('UserInputService')
-        local frame = Main
-        local dragging, dragStart, startPos
-        local dragSpeed = 0.25
+    -- Set up Screen Frame
+    Screen.Name = "Screen"
+    Screen.Parent = M4xKr9PvZsT2LwQ8
+    Screen.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Screen.BackgroundTransparency = 1.000
+    Screen.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Screen.BorderSizePixel = 0
+    Screen.Position = UDim2.new(-0.00770218251, 0, 0, 0)
+    Screen.Size = UDim2.new(1, 910, 1, 0)
 
-        local function updateInput(input)
-            local delta = input.Position - dragStart
-            local pos = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
-                                  startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-            game:GetService('TweenService'):Create(frame, TweenInfo.new(dragSpeed), {Position = pos}):Play()
-        end
+    -- Set up Key Frame
+    Key.Name = "Key"
+    Key.Parent = Screen
+    Key.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    Key.BackgroundTransparency = 0.200
+    Key.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Key.BorderSizePixel = 0
+    Key.Position = UDim2.new(0.110716403, 0, 0.25172922, 0)
+    Key.Size = UDim2.new(0, 373, 0, 191)
 
-        frame.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-                dragging = true
-                dragStart = input.Position
-                startPos = frame.Position
-                input.Changed:Connect(function()
-                    if input.UserInputState == Enum.UserInputState.End then
-                        dragging = false
-                    end
-                end)
-            end
-        end)
+    UICorner.CornerRadius = UDim.new(0, 3)
+    UICorner.Parent = Key
 
-        UIS.InputChanged:Connect(function(input)
-            if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
-                updateInput(input)
-            end
-        end)
-    end)()
+    -- Set up Title1
+    Tittle1.Name = "Tittle1"
+    Tittle1.Parent = Key
+    Tittle1.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Tittle1.BackgroundTransparency = 1.000
+    Tittle1.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Tittle1.BorderSizePixel = 0
+    Tittle1.Position = UDim2.new(0.0179027729, 0, -0.00472583063, 0)
+    Tittle1.Size = UDim2.new(0, 234, 0, 30)
+    Tittle1.Font = Enum.Font.Code
+    Tittle1.Text = options.Tittle or "Frog Hub"
+    Tittle1.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Tittle1.TextSize = 21.000
+    Tittle1.TextXAlignment = Enum.TextXAlignment.Left
 
-    -- Toggle visibility with keybind
-    local UIS = game:GetService("UserInputService")
-    UIS.InputBegan:Connect(function(input, processed)
-        if not processed and input.KeyCode == Enum.KeyCode[toggleKey] then
-            UI.Enabled = not UI.Enabled
+    -- Set up Title2
+    Tittle2.Name = "Tittle2"
+    Tittle2.Parent = Key
+    Tittle2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Tittle2.BackgroundTransparency = 1.000
+    Tittle2.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    Tittle2.BorderSizePixel = 0
+    Tittle2.Position = UDim2.new(0.0179027729, 0, 0.154034361, 0)
+    Tittle2.Size = UDim2.new(0, 234, 0, 19)
+    Tittle2.Font = Enum.Font.Code
+    Tittle2.Text = options.Tittle2 or "Key system"
+    Tittle2.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Tittle2.TextSize = 13.000
+    Tittle2.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- Set up KeyBoxFrame
+    KeyBoxFrame.Name = "KeyBoxFrame"
+    KeyBoxFrame.Parent = Key
+    KeyBoxFrame.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
+    KeyBoxFrame.BackgroundTransparency = 0.300
+    KeyBoxFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    KeyBoxFrame.BorderSizePixel = 0
+    KeyBoxFrame.Position = UDim2.new(0.155495971, 0, 0.366492152, 0)
+    KeyBoxFrame.Size = UDim2.new(0, 257, 0, 48)
+
+    UICorner_2.Parent = KeyBoxFrame
+
+    -- Set up KeyBox
+    KeyBox.Name = "KeyBox"
+    KeyBox.Parent = KeyBoxFrame
+    KeyBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    KeyBox.BackgroundTransparency = 1.000
+    KeyBox.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    KeyBox.BorderSizePixel = 0
+    KeyBox.Position = UDim2.new(0.023346303, 0, 0, 0)
+    KeyBox.Size = UDim2.new(0, 251, 0, 48)
+    KeyBox.Font = Enum.Font.Code
+    KeyBox.PlaceholderText = "Insert Key"
+    KeyBox.Text = ""
+    KeyBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    KeyBox.TextSize = 19.000
+    KeyBox.TextXAlignment = Enum.TextXAlignment.Left
+
+    -- Set up GetLinkFrame
+    GetLinkFrame.Name = "GetLinkFrame"
+    GetLinkFrame.Parent = Key
+    GetLinkFrame.BorderColor3 = Color3.fromRGB(0, 0, 0)
+    GetLinkFrame.BorderSizePixel = 0
+    GetLinkFrame.Position = UDim2.new(0.233243972, 0, 0.654450238, 0)
+    GetLinkFrame.Size = UDim2.new(0, 198, 0, 41)
+
+    -- Set button color based on Link type
+    local link = options.SecondAction.Link or ""
+    if string.match(link:lower(), "discord") then
+        GetLinkFrame.BackgroundColor3 = Color3.fromRGB(88, 101, 242) -- Blue for Discord
+    else
+        GetLinkFrame.BackgroundColor3 = Color3.fromRGB(0, 255, 0) -- Green for Website
+    end
+
+    UICorner_3.Parent = GetLinkFrame
+
+    -- Dragging functionality (unchanged)
+    local Drag = Key
+    local gsCoreGui = game:GetService("CoreGui")
+    local gsTween = game:GetService("TweenService")
+    local UserInputService = game:GetService("UserInputService")
+    local dragging
+    local dragInput
+    local dragStart
+    local startPos
+
+    local function update(input)
+        local delta = input.Position - dragStart
+        local dragTime = 0.04
+        local SmoothDrag = {}
+        SmoothDrag.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+        local dragSmoothFunction = gsTween:Create(Drag, TweenInfo.new(dragTime, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), SmoothDrag)
+        dragSmoothFunction:Play()
+    end
+
+    Drag.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            dragging = true
+            dragStart = input.Position
+            startPos = Drag.Position
+            input.Changed:Connect(function()
+                if input.UserInputState == Enum.UserInputState.End then
+                    dragging = false
+                end
+            end)
         end
     end)
 
-    -- Rainbow animation
-    local rainbowRunning = {Background = false, Outline = false}
-
-    local function startRainbow(target, setColor)
-        rainbowRunning[target] = true
-        coroutine.wrap(function()
-            local hue = 0
-            while rainbowRunning[target] do
-                hue = (hue + 0.01) % 1
-                setColor(Color3.fromHSV(hue, 1, 1))
-                task.wait(0.03)
-            end
-        end)()
-    end
-
-    local function stopRainbow(target)
-        rainbowRunning[target] = false
-    end
-
-    -- Return loader object
-    local Loader = {}
-
-    Loader.Scheme = setmetatable({}, {
-        __newindex = function(_, k, v)
-            if k == "Backgroundcolor" then
-                stopRainbow("Background")
-                if v:lower() == "rainbow" then
-                    startRainbow("Background", function(color)
-                        Main.BackgroundColor3 = color
-                    end)
-                else
-                    Main.BackgroundColor3 = ColorMap[v] or ColorMap.Black
-                end
-            elseif k == "OutlineColor" then
-                stopRainbow("Outline")
-                if v:lower() == "rainbow" then
-                    startRainbow("Outline", function(color)
-                        UIStroke.Color = color
-                    end)
-                else
-                    UIStroke.Color = ColorMap[v] or ColorMap.Green
-                end
-            end
+    Drag.InputChanged:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+            dragInput = input
         end
-    })
+    end)
 
-    return Loader
+    UserInputService.InputChanged:Connect(function(input)
+        if input == dragInput and dragging and Drag.Size then
+            update(input)
+        end
+    end)
+
+    -- Return the UI or relevant objects
+    return {
+        ScreenGui = M4xKr9PvZsT2LwQ8,
+        KeyBox = KeyBox,
+        GetLinkFrame = GetLinkFrame
+    }
 end
 
 return Library
