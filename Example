@@ -6,6 +6,6 @@ local Window = Library:CreateWindow({
 })
 
 Window.Theme = {
-    BackGroundColor = Color3.fromRGB(20, 20, 20)
+    BackGroundColor = Color3.fromRGB(20, 20, 20),
     OutlineColor = Color3.fromRGB(81, 0, 255)
 }
