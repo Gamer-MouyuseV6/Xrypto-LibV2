@@ -7,20 +7,20 @@ local Config = Library:CreateConfig({
 })
 
 local Key = Library:CreateLoader({
-    Enable = true,                   -- Enables the loader
-    Tittle = "Frog Hub",             -- Title of the loader (likely displayed in the UI)
-    Tittle2 = "Key system",          -- A second Tittle below Tittle
-    Key = {"Key"},                   -- The valid key(s) for authentication (in this case, a single key: "Key")
-    SaveKey = true,                  -- Saves the key (e.g., to a file or storage) for future use
-    AutoCheckIfKeyiscorrect = true,  -- Automatically checks the keybox if it has the right key 
-    ToggleKeybind = "RightControl",  -- Keybind to toggle the loader UI (Right Ctrl key)
-    SecondAction = {                 -- Configuration for a secondary action (e.g., a button or link)
-        GetLinkType = "Link",        -- Specifies the type of secondary action (a link in this case)
-        Link = "WebsiteOrDiscord",   -- Placeholder for a website or Discord link
-        Button = GetLink,   
-        KeyBox = KeyBox, 
+    Enable = true,
+    Tittle = "Frog Hub",
+    Tittle2 = "Key system",
+    Key = {"Key"},
+    SaveKey = true,
+    AutoCheckIfKeyiscorrect = true,
+    ToggleKeybind = "RightControl",
+    SecondAction = {
+        GetLinkType = "Link",
+        Link = "https://discord.com/invite/abc123", -- Discord link (button will be blue)
+        Button = GetLinkFrame,
+        KeyBox = KeyBox,
         Callback = function()
-            -- code here when the key is correct --
+            print("Key is correct!")
         end
     }
 })
